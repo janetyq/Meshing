@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from helper import *
 
+# TODO: refactor
+
 class Triangulation:
     def __init__(self):
         self.points = np.empty((0, 2), dtype=float)

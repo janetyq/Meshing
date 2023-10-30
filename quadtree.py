@@ -124,10 +124,6 @@ class QuadTree:
             child.draw(screen)
     
 
-
-        
-
-
 if __name__ == '__main__':
     width, height = 800, 600
 

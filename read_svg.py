@@ -1,33 +1,10 @@
 import xml.etree.ElementTree as ET
 import svg.path
 import matplotlib.pyplot as plt
+from douglas_peucker import douglas_peucker
 
 # TODO:
 # smartly specify cubic bezier curve resolution
-
-def douglas_peucker(points, epsilon):
-    '''
-    Returns a simplified version of the given list of points using the Douglas-Peucker algorithm.
-    '''
-    if len(points) <= 2:
-        return points
-    dmax = 0
-    pt_idx = None
-    start, end = points[0], points[-1]
-    vec = [end[0] - start[0], end[1] - start[1]]
-    norm = (vec[0]**2 + vec[1]**2)**0.5
-    for idx in range(1, len(points)-1):
-        point = points[idx]
-        cross = (point[0] - start[0]) * vec[1] - (point[1] - start[1]) * vec[0]
-        d = abs(cross) / norm
-        if d > dmax:
-            dmax = d
-            pt_idx = idx
-    
-    if dmax < epsilon:
-        return [start, end]
-    else:
-        return douglas_peucker(points[:pt_idx+1], epsilon)[:-1] + douglas_peucker(points[pt_idx:], epsilon)
 
 def remove_close_points(points, epsilon):
     '''
@@ -58,6 +35,9 @@ def calculate_polygon_area(points):
     return abs(area)
 
 def read_svg_to_list_of_path_coords(svg_file):
+    '''
+    Reads svg file and returns a list of closed loop paths, where each path is a list of points.
+    '''
     # Read the SVG file and parse it
     tree = ET.parse(svg_file)
     root = tree.getroot()
@@ -93,6 +73,12 @@ def read_svg_to_list_of_path_coords(svg_file):
     return list_of_path_coords
 
 def process_list_of_path_coords(list_of_path_coords, epsilon=0, min_area=0):
+    '''
+    Simplifies paths by applying Douglas-Peucker algorithm with the given epsilon.
+    Removes paths with an area less than min_area.
+
+    Returns a list of line segments of the processed list of paths
+    '''
     path_segments = []
     for path_coords in list_of_path_coords:
         area = calculate_polygon_area(path_coords)
@@ -127,7 +113,7 @@ def read_and_process_svg(svg_file, epsilon=0, min_area=0):
     return vertices, segments
 
 if __name__ == '__main__':
-    V, S = read_and_process_svg('outline-ca.svg', epsilon=0, min_area=0)
+    V, S = read_and_process_svg('svg_files/outline-ca.svg', epsilon=0, min_area=0)
 
     # Display the svg image
     import matplotlib.pyplot as plt

@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from mc_tables import *
+from utils.mc_tables import *
 from math import pi, cos, sin
 
 def plot_vertices(vertices):
@@ -24,9 +24,10 @@ def plot_mesh(vertices, faces, title='3D Mesh', show_points=False):
     if show_points:
         ax.scatter(vertices[:, 0], vertices[:, 1], vertices[:, 2], c='b', marker='.')
 
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
+    # turn off axis ticks, but keep grid
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
     ax.set_aspect('equal')
     ax.set_title(title)
 
@@ -76,28 +77,3 @@ def marching_cubes(x_range, y_range, z_range, resolution, func):
     voxel_grid = create_voxel_grid((x_range, y_range, z_range), resolution, func)
     vertices, faces = grid_to_mesh(voxel_grid, resolution, np.array([x_range[0], y_range[0], z_range[0]]))
     return vertices, faces
-
-
-if __name__ == "__main__":
-    # MARCHING CUBES DEMO
-
-    # Define a parametric function
-    def torus(x, y, z, R=1.2, r=0.6):
-        cond1 = R - r < np.sqrt(x**2 + y**2) < R + r
-        cond2 = z**2 + (np.sqrt(x**2 + y**2)-R)**2 < r**2
-        return cond1 and cond2
-    
-    def foo(x, y, z):
-        # cool surface
-        return 0.7*sin(1.7*x+1.2*y) + sin(-y) + 1.5*z > 0
-
-    # Set dimensions
-    x_range, y_range, z_range = (-2, 2), (-2, 2), (-2, 2)
-    resolution = 0.15
-
-    # Marching Cubes
-    vertices, faces = marching_cubes(x_range, y_range, z_range, resolution, foo)
-
-    # Plot result
-    plot_mesh(vertices, faces)
-    plt.show() 

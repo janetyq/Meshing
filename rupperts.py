@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial import Delaunay
 import pickle
-from read_svg import *
 from math import sqrt, acos, pi, atan2
-from quadtree import *
-from helper import *
+from utils.read_svg import *
+from utils.quadtree import *
+from utils.helper import *
 
 # TODO:
 # efficiency
@@ -227,40 +227,3 @@ def save_triangle_mesh(filepath, vertices, faces, boundary_edges):
     with open(filepath, 'wb') as f:
         pickle.dump([vertices, faces, boundary_edges], f)
     print('Saved mesh to', filepath)
-
-if __name__ == '__main__':
-    print('Ruppert\'s Algorithm Demo')
-    # LOAD Planar Straight Line Graph (PSLG)
-    #   V - vertices
-    #   S - segments - list of pairs of vertex indices
-    #   epsilon - parameter for path simplification (Douglas-Peucker), higher = more simplification
-    #   min_area - minimum area of polygon to include in PSLG
-
-    # PSLG example
-    # with open('pslg_doubleslit.pkl', 'rb') as f:
-    #     V, S = pickle.load(f)
-
-    # SVG example
-    V, S = read_and_process_svg('svg_files/outline-ca.svg', epsilon=10, min_area=10000)
-    print('Number of initial vertices:', len(V))
-
-    # RUN Ruppert's Algorithm
-    #  min_angle - minimum angle of triangles in final triangulation
-    #  max_area - maximum area of triangles in final triangulation
-    #  triangles - list of triples of vertex indices of faces in final triangulation
-    rupperts = Rupperts(V, S, min_angle=20, max_area=float('inf'))
-    triangles = rupperts.run_algo()
-    print('Number of triangles:', len(triangles))
-
-    # PLOT RESULTS
-    fig, axs = plt.subplots(1, 2, figsize=(12, 6))
-    fig.suptitle('Ruppert\'s Algorithm for Triangulation')
-    rupperts.plot(title='Initial PSLG', show=False, triangulation=False, vertices=False, ax=axs[0])
-    rupperts.plot(title='Final Triangulation', show=False, triangulation=False, ax=axs[1])
-    axs[1].triplot(rupperts.V[:, 0], rupperts.V[:, 1], triangles)
-    axs[0].invert_yaxis()
-    axs[1].invert_yaxis()
-    plt.show()
-
-    # SAVE RESULTS
-    save_triangle_mesh('demo_mesh.pkl', rupperts.V, triangles, rupperts.S)

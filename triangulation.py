@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from helper import *
+from utils.helper import *
 
-# TODO: refactor
+# TODO: please refactor
+# make nice animation and plot
 
 class Triangulation:
     def __init__(self):
@@ -90,16 +91,7 @@ def bowyer_watson(points_list):
         if any([idx < 3 for idx in triangle]):
             tri.remove_triangle(triangle)
 
-    print(tri)
     tri.points = tri.points[3:]
     tri.triangles = set([(triangle[0]-3, triangle[1]-3, triangle[2]-3) for triangle in tri.triangles])
 
     return tri
-
-
-if __name__ == '__main__':
-    points_list = np.random.rand(50, 2)
-    tri = bowyer_watson(points_list)
-    tri.display()
-
-    print('done')

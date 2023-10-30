@@ -1,9 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial import Voronoi, voronoi_plot_2d, Delaunay
-import pickle
-from quadtree import *
-from helper import *
+from utils.quadtree import *
+from utils.helper import *
 
 def lloyds_helper(points, fixed_boundary, grid_quadtree):
     vor = Voronoi(points)
@@ -90,41 +89,3 @@ def plot_voronoi_delaunay_result(initial_vertices, final_vertices, fixed_boundar
             axs[1, 1].plot(initial_vertices[edge][:,0], initial_vertices[edge][:,1], color='k')
 
     plt.show()
-
-def generate_rectangle_demo(N):
-    vertices = np.random.rand(N, 2)
-    N_e = int(np.sqrt(N)) + 1
-    edges = np.linspace(0, 1, N_e)
-    edge_vertices = np.vstack([
-        np.column_stack((np.zeros(N_e), edges)),
-        np.column_stack((np.ones(N_e), edges)),
-        np.column_stack((edges[1:-1], np.zeros(N_e-2))),
-        np.column_stack((edges[1:-1], np.ones(N_e-2)))
-    ])
-    vertices = np.vstack([vertices, edge_vertices])
-    fixed_boundary = list(range(N, N + 4*(N_e-1)))
-    return vertices, fixed_boundary
-
-if __name__ == '__main__':
-    # Create random points
-    vertices, fixed_boundary = generate_rectangle_demo(40)
-
-    # with open('lowpoly_california_mesh.pkl', 'rb') as f:
-    #     vertices, faces, boundary_edges = pickle.load(f)
-
-    # fixed_boundary = list(set([edge[0] for edge in boundary_edges] + [edge[1] for edge in boundary_edges]))
-
-    # Run Lloyd's algorithm
-    initial_vertices = vertices.copy()
-    vertices = lloyds(vertices, fixed_boundary, n=10)
-
-
-    plot_voronoi_delaunay_result(initial_vertices, vertices)
-    # plot_voronoi_delaunay_result(initial_vertices, vertices, fixed_boundary, boundary_edges, faces)
-
-    # Pickle dump
-    # with open('test_vertices.pkl', 'wb') as f:
-    #     pickle.dump(vertices, f)
-
-
-    print('lloyds.py done')
